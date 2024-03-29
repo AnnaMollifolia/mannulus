@@ -1,0 +1,37 @@
+services:
+  database:
+    image: postgres
+    environment:
+      POSTGRES_DB: "data"
+      POSTGRES_USER: "pguser"
+      POSTGRES_PASSWORD: "pguser"
+      PGDATA: "/var/lib/postgresql-static/data/ann"
+    volumes:
+      - pg-db-1:/var/lib/postgresql-static/data/ann
+    ports:
+      - "5432:5432"
+    networks:
+      - base
+  back:
+    build: ./back
+    ports:
+      - "6000:6000"
+      - "4443:4443"
+    networks:
+      - base
+    depends_on:
+      - database
+
+  bot:
+    build: ./bot
+    networks:
+      - base
+    depends_on:
+      - back
+
+volumes:
+  pg-db-1:
+
+networks:
+  base:
+    driver: bridge
